@@ -6,11 +6,14 @@ requires-python = ">=3.12"
 license = "MIT-0"
 license-files = ["LICENSE"]
 dependencies = [
+  "numpy>=2,<3",
+  "scipy>=1.14,<2",
   "spacecraft-autonomy-challenge-core",
 ]
 
 [dependency-groups]
 dev = [
+  "mypy>=1.18,<2",
   "ruff==0.17.1",
 ]
 notebook = [
@@ -35,3 +38,12 @@ exclude-newer = "3 days"
 
 [tool.uv.sources]
 spacecraft-autonomy-challenge-core = { git = "https://github.com/conjikidow/spacecraft-autonomy-challenge-core", tag = "v2.0.2" }
+
+[tool.mypy]
+python_version = "3.12"
+files = ["submission"]
+strict = true
+
+[[tool.mypy.overrides]]
+module = ["scipy.*"]
+ignore_missing_imports = true

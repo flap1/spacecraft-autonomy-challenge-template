@@ -17,3 +17,13 @@ __marimo__/
 
 # Submissions this clone has sent to an evaluation server
 .submissions.log
+
+# Local analysis, caches and credentials
+.mypy_cache/
+.ruff_cache/
+.pytest_cache/
+.coverage
+htmlcov/
+.env
+.env.*
+research/

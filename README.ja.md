@@ -210,6 +210,38 @@ API とチャレンジについては，core リポジトリのドキュメン�
 - [参加者のパッケージ](https://github.com/conjikidow/spacecraft-autonomy-challenge-core/blob/v2.0.2/docs/dependencies.ja.md)：`pyproject.toml` のパッケージの再現方法
 - [得点](https://github.com/conjikidow/spacecraft-autonomy-challenge-core/blob/v2.0.2/docs/scoring.ja.md)：評価ケースと `Suite` の得点の計算方法
 
+
+## このリポジトリの戦略と開発
+
+提出入口は `submission/strategy.py` の `MyStrategy` です。
+内部実装は `submission/autonomy/` にまとめています。
+
+- `controller.py`：温度・運動量の安全余裕と低温からの復帰。
+- `beam.py`：Δv・推力の推定とビームサーチによる予測制御。
+- `linear.py`：LPによる噴射・電池・温度・運動量の配分。
+- `diagnostics.py`、`economic.py`：診断噴射、発熱・電力の推定と計画の選択。
+- `dump.py`：健全なスラスタとモーメンタムダンプの組み合わせ。
+- `models.py`、`thermal.py`：計画の型と検証、共通の熱計算。
+
+現在の設定は予測温度に4℃、運動量に0.5 Nmsの余裕を残します。
+これは任意の故障やセンサー誤差に対する安全保証ではありません。
+外部エディタで変更した場合、アプリのカーネルを再起動し、全セルを実行してください。
+
+開発時の確認は、すべてuv経由で実行します。
+
+```sh
+uv sync --locked
+uv run ruff format --check .
+uv run ruff check .
+uv run mypy
+uv run python -m unittest discover -s tests -v
+uv run autonomy-challenge check
+```
+
+テストには公開シナリオ、温度センサーの過小表示、推力ゼロ、
+加温後の再試行、ソルバー失敗時の代替動作を含みます。
+評価サーバーへの送信はテストでは実行しません。
+
 ## ライセンス
 
 このテンプレートは [MIT-0](LICENSE) ライセンスで提供されているため，著作権表示を残さなくても，これを土台に提出物を作れます。

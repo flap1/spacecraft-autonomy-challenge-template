@@ -1,38 +1,14 @@
-"""Your strategy for the Spacecraft Autonomy Challenge."""
+"""Submission entry point; safety settings live in autonomy.controller."""
 
-import pprint
+from typing import TYPE_CHECKING
 
-from spacecraft_autonomy_challenge import (  # noqa: F401
-    Commander,
-    CommandError,
-    CommandId,
-    DeclareCompletion,
-    MissionBrief,
-    PropulsionMode,
-    SafetyLimits,
-    ScheduledCommand,
-    SetHeater,
-    SetMomentumDump,
-    SetPropulsionMode,
-    SpacecraftParameters,
-    Strategy,
-    Telemetry,
-    ThrusterParameters,
-)
+# Core loads this file by path and puts its directory on sys.path. Tests import
+# it as a package instead; select explicitly without hiding dependency errors.
+if TYPE_CHECKING or __package__:
+    from .autonomy.controller import ConservativeStrategy
+else:
+    from autonomy.controller import ConservativeStrategy
 
 
-class MyStrategy(Strategy):
-    def initialize(
-        self, brief: MissionBrief, telemetry: Telemetry, commander: Commander
-    ) -> None:
-        """Called once at time 0.
-
-        Schedule commands with `commander.schedule(time_s, command)`,
-        e.g. `commander.schedule(600.0, SetMomentumDump(on=True))`.
-        The nominal initial state is `brief.nominal_initial_telemetry`.
-        """
-        pprint.pp(brief)
-        pprint.pp(telemetry)
-
-    def update(self, telemetry: Telemetry, commander: Commander) -> None:
-        """Called every `brief.decision_period_s` seconds with the latest telemetry."""
+class MyStrategy(ConservativeStrategy):
+    """Conservative adaptive MPC with thermal and momentum safety reserves."""

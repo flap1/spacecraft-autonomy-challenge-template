@@ -218,6 +218,34 @@ The core repository documents the API and the challenge, at the commit this temp
 - [Participant Packages](https://github.com/conjikidow/spacecraft-autonomy-challenge-core/blob/v2.0.2/docs/dependencies.md): how the packages of `pyproject.toml` are reproduced
 - [Scoring](https://github.com/conjikidow/spacecraft-autonomy-challenge-core/blob/v2.0.2/docs/scoring.md): how a case and a suite are scored
 
+
+## Strategy and development
+
+The entry point is `submission/strategy.py:MyStrategy`. The implementation lives
+in `submission/autonomy/`: conservative recovery policy (`controller.py`), beam
+MPC (`beam.py`), global resource allocation (`linear.py`), online identification
+(`diagnostics.py`, `economic.py`), momentum dumping (`dump.py`), and shared typed
+models and thermal equations (`models.py`, `thermal.py`).
+
+The conservative configuration reserves 4°C below the thermal limit and 0.5 Nms
+inside the wheel-momentum limit. These are engineering margins, not guarantees
+for arbitrary faults or sensor errors. Restart the notebook kernel and run all
+cells after editing files outside the app.
+
+Run all development checks through uv:
+
+```sh
+uv sync --locked
+uv run ruff format --check .
+uv run ruff check .
+uv run mypy
+uv run python -m unittest discover -s tests -v
+uv run autonomy-challenge check
+```
+
+Tests cover public scenarios, temperature under-reading, zero thrust, warm-up
+retries, and solver-failure fallback. They do not submit to an evaluation server.
+
 ## License
 
 This template is licensed under [MIT-0](LICENSE), so you can build your submission on it without carrying a notice along.
